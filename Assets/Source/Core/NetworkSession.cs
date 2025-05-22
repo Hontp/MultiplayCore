@@ -1,3 +1,5 @@
+using FrameLabs.Multiplayer.Game;
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,15 +8,29 @@ namespace FrameLabs.Multiplayer.Core
     public class NetworkSession : INetworkSession
     {
         private bool isDedicated = false;
-
         public bool IsConnected => NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer;
         public bool IsHost => NetworkManager.Singleton.IsHost;
-
         public bool IsDedicated => isDedicated;
+
+        public Action<ulong> HandleClientConnected;
 
         public void Host(bool dedicated)
         {
             isDedicated = dedicated;
+
+            // Set approval callback
+            NetworkManager.Singleton.ConnectionApprovalCallback = (request, response) =>
+            {
+                response.Approved = true;
+                response.CreatePlayerObject = false;
+                response.Pending = false;
+
+                Debug.Log($"[Approval] Approved client {request.ClientNetworkId} connection.");
+            };
+
+            // Register connected callback
+            NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
+
 
             if (isDedicated)
             {

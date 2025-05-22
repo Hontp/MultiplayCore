@@ -1,5 +1,7 @@
+using FrameLabs.Multiplayer.Game;
 using System;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 
@@ -81,7 +83,7 @@ namespace FrameLabs.Multiplayer.Core
             {
                 Voice = serviceFactory.CreateChatService();
                 Voice.Initialize(config.UserId);
-            }
+            }          
         }
 
         public async Task<bool> TryInitializeHostAsync(NetworkSessionConfig config)
